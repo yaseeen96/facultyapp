@@ -31,10 +31,17 @@ environment:
 dependencies:
   cupertino_icons: ^1.0.2
   dio: ^4.0.6
+  excel: ^2.0.0-null-safety-3
+  file_picker: ^5.1.0
   flutter:
     sdk: flutter
+  flutter_screenutil: ^5.5.4
+  full_screen_image_null_safe: ^2.0.0
+  image_picker: ^0.8.5+3
+  path_provider: ^2.0.11
   shared_preferences: ^2.0.15
   sliding_up_panel: ^2.0.0+1
+  syncfusion_flutter_xlsio: ^20.2.49-beta
   wiredash: ^1.5.0
 
 dev_dependencies:

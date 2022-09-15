@@ -8,8 +8,8 @@ class StudentProfile extends Profile {
   Future<FacultyProfileModel> UserProfile() async {
     // for android use 10.0.2.2/8000
     // for iOS use 127.0.0.1/8000
-    final url =
-        "https://c08gjwvlm3.execute-api.ap-south-1.amazonaws.com/student/studentapi/student/profile/";
+    const url =
+        "https://z8w307611i.execute-api.ap-south-1.amazonaws.com/faculty/api/user/profile/";
 
     final dio = Dio();
 

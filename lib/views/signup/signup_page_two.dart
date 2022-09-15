@@ -74,7 +74,7 @@ class SignupPagetwo extends StatelessWidget {
                       // print(email.text);
                       _register.FacultyRegister(email.text, name.text,
                           department.text, password.text, confirmPassword.text);
-                      Navigator.popAndPushNamed(context, '/');
+                      Navigator.popAndPushNamed(context, '/login');
                     },
                     child: Text(
                       "Next",

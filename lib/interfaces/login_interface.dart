@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:facultyapp/models/faculty_login_model.dart';
-import 'package:flutter/material.dart';
-import 'package:facultyapp/models/faculty_login_model.dart';
 
 abstract class Login {
   Future<FacultyLoginModel> FacultyLogin(

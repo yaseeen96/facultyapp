@@ -6,22 +6,17 @@ class customButton extends StatelessWidget {
     required this.deviceHeight,
     required this.deviceWidth,
     required this.text,
-    this.onPressPage,
+    required this.onTap,
   }) : super(key: key);
   final double deviceHeight;
   final double deviceWidth;
   final String text;
-  final onPressPage;
+  final Function() onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.pushReplacementNamed(
-          context,
-          onPressPage,
-        );
-      },
+      onTap: onTap,
       child: Container(
         alignment: Alignment.center,
         height: deviceHeight * 0.075,

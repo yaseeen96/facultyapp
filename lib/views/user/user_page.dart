@@ -1,19 +1,35 @@
 //pre-defined imports
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:facultyapp/models/faculty_login_model.dart';
-import 'package:facultyapp/views/login/login_page.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:facultyapp/services/event_service.dart';
+import 'package:facultyapp/views/events/eventdetails.dart';
 
 //user-defined imports
+import '../../interfaces/event_interface.dart';
+
 import '../../utils/configurations.dart';
+import '../events/add_event.dart';
 import 'user_settings_page.dart';
-// import '../event/event_detail.dart';
+import '../events/eventdetails.dart';
+import '../../models/events_model.dart';
+import '../../services/event_service.dart';
+import '../../utils/colors.dart';
+
+// Global Declaration
+
+// 1. Declare EventsModelClass
+late Future<List<EventsModel>> data;
+
+// 2. Create an object of CollegeEvents that fetches API
+final Events _college = CollegeEvents();
 
 class UserPage extends StatefulWidget {
-  const UserPage({
+  UserPage({
     super.key,
+    this.user,
   });
 
+  var user;
   @override
   State<UserPage> createState() => _UserPageState();
 }
@@ -23,8 +39,13 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
+    //Tab bar
+
     _tabBarContoller = TabController(length: 2, vsync: this);
+
+    //GET API -> getEvents
+    data = _college.eventsFeed();
+
     super.initState();
   }
 
@@ -41,19 +62,24 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
         // elevation: 0,
         toolbarHeight: deviceHeight * 0.10,
         backgroundColor: Theme.of(context).highlightColor,
-        centerTitle: false,
+        centerTitle: true,
         title: Text(
-          "Welcome, Yaseen",
+          "Faculty Events",
           style: TextStyle(
+              fontSize: 24.sp,
               color: Theme.of(context).primaryColor,
-              fontSize: 2.2 * unitHeightValue,
               fontWeight: FontWeight.bold),
         ),
+
         actions: [
           IconButton(
             padding: EdgeInsets.all(deviceWidth * 0.05),
-            onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => UserSettingsPage())),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UserSettingsPage(),
+              ),
+            ),
             icon: Icon(
               color: Theme.of(context).primaryColor,
               Icons.account_circle,
@@ -74,7 +100,7 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.circular(25),
                   color: Theme.of(context).primaryColor),
               indicatorColor: Theme.of(context).primaryColor,
-              isScrollable: true,
+              // isScrollable: true,
               indicatorSize: TabBarIndicatorSize.label,
               unselectedLabelColor: Colors.grey,
               labelColor: Theme.of(context).highlightColor,
@@ -85,7 +111,7 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
                   child: Padding(
                     child: Text("Upcoming"),
                     padding: EdgeInsets.symmetric(
-                        horizontal: getDeviceWidth(context) * 0.08),
+                        horizontal: getDeviceWidth(context) * 0.1),
                   ),
                 ),
                 Tab(
@@ -93,7 +119,7 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
                   child: Padding(
                     child: Text("Completed"),
                     padding: EdgeInsets.symmetric(
-                        horizontal: getDeviceWidth(context) * 0.08),
+                        horizontal: getDeviceWidth(context) * 0.1),
                   ),
                 ),
               ],
@@ -102,7 +128,7 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
               height: deviceHeight * 0.02,
             ),
             Container(
-              height: deviceHeight * 0.7,
+              height: deviceHeight * 0.65,
               child: TabBarView(
                 controller: _tabBarContoller,
                 children: [
@@ -112,6 +138,18 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
               ),
             ),
           ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        foregroundColor: Theme.of(context).highlightColor,
+        backgroundColor: Theme.of(context).primaryColor,
+        child: Icon(Icons.add),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AddEvents(),
+          ),
         ),
       ),
     );
@@ -127,32 +165,36 @@ class Upcoming extends StatelessWidget {
     final deviceWidth = getDeviceWidth(context);
     final deviceHeight = getDeviceHeight(context);
     return Container(
-      // height: getDeviceHeight(context) * .4,
-      child: ListView(
-        scrollDirection: Axis.vertical,
-        children: [
-          EventFeed(
-            deviceWidth: deviceWidth,
-            deviceHeight: deviceHeight,
-            unitHeightValue: unitHeightValue,
-          ),
-          SizedBox(
-            height: deviceHeight * 0.02,
-          ),
-          EventFeed(
-            deviceWidth: deviceWidth,
-            deviceHeight: deviceHeight,
-            unitHeightValue: unitHeightValue,
-          ),
-          SizedBox(
-            height: deviceHeight * 0.02,
-          ),
-          EventFeed(
-            deviceWidth: deviceWidth,
-            deviceHeight: deviceHeight,
-            unitHeightValue: unitHeightValue,
-          ),
-        ],
+      child: FutureBuilder<List<EventsModel>>(
+        future: data,
+        builder: (context, snapshot) {
+          if (snapshot.data != null) {
+            List<EventsModel> eventList = snapshot.data!;
+
+            return ListView(
+              children: eventList
+                  .map(
+                    (event) => EventFeed(
+                        deviceWidth: deviceWidth,
+                        deviceHeight: deviceHeight,
+                        unitHeightValue: unitHeightValue,
+                        eventData: event),
+                  )
+                  .toList(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Upcoming -> ${snapshot.data}'),
+            );
+          } else if (snapshot.data == null) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+            );
+          }
+          return Center(child: Text("null"));
+        },
       ),
     );
   }
@@ -162,36 +204,42 @@ class Completed extends StatelessWidget {
   const Completed({super.key});
 
   @override
+  @override
   Widget build(BuildContext context) {
     double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
     final deviceWidth = getDeviceWidth(context);
     final deviceHeight = getDeviceHeight(context);
     return Container(
-      // height: getDeviceHeight(context) * .4,
-      child: ListView(
-        children: [
-          EventFeed(
-            deviceWidth: deviceWidth,
-            deviceHeight: deviceHeight,
-            unitHeightValue: unitHeightValue,
-          ),
-          SizedBox(
-            height: deviceHeight * 0.02,
-          ),
-          EventFeed(
-            deviceWidth: deviceWidth,
-            deviceHeight: deviceHeight,
-            unitHeightValue: unitHeightValue,
-          ),
-          SizedBox(
-            height: deviceHeight * 0.02,
-          ),
-          EventFeed(
-            deviceWidth: deviceWidth,
-            deviceHeight: deviceHeight,
-            unitHeightValue: unitHeightValue,
-          ),
-        ],
+      child: FutureBuilder<List<EventsModel>>(
+        future: data,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.data != null) {
+            List<EventsModel> eventList = snapshot.data!;
+
+            return ListView(
+              children: eventList
+                  .map(
+                    (event) => EventFeed(
+                        deviceWidth: deviceWidth,
+                        deviceHeight: deviceHeight,
+                        unitHeightValue: unitHeightValue,
+                        eventData: event),
+                  )
+                  .toList(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Completed -> ${snapshot.error}'),
+            );
+          } else if (snapshot.data == null) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).primaryColor,
+              ),
+            );
+          }
+          return Center(child: Text("null"));
+        },
       ),
     );
   }
@@ -203,10 +251,12 @@ class EventFeed extends StatelessWidget {
     required this.deviceWidth,
     required this.deviceHeight,
     required this.unitHeightValue,
+    required this.eventData,
   }) : super(key: key);
 
   final deviceWidth;
   final deviceHeight;
+  final EventsModel? eventData;
   final double unitHeightValue;
 
   @override
@@ -225,8 +275,12 @@ class EventFeed extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                fit: BoxFit.cover,
-                image: AssetImage("assets/images/blockchain.png"),
+                // To fit the image width within the container
+                fit: BoxFit.fitWidth,
+
+                image: NetworkImage(
+                  "${eventData!.image}",
+                ),
               ),
             ),
           ),
@@ -238,16 +292,19 @@ class EventFeed extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  "Blockchain",
+                  "${eventData!.eventTitle}",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 3 * unitHeightValue),
+                      overflow: TextOverflow.ellipsis,
+                      fontSize: 2.5 * unitHeightValue),
                 ),
                 SizedBox(
                   height: deviceHeight * 0.015,
                 ),
                 Text(
-                  'Start date: 04-09-22',
+                  'Start date: ${eventData!.startDate}',
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 1.5 * unitHeightValue,
@@ -257,13 +314,15 @@ class EventFeed extends StatelessWidget {
                   height: deviceHeight * 0.01,
                 ),
                 Text(
-                  'Venue: Onlinefhdsbfhjdsfhdsbfsdjhfbdshjfbdhjfbdshjfbdshf',
+                  'Venue: ${eventData!.venue}',
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 1.5 * unitHeightValue,
                   ),
                 ),
                 SizedBox(
-                  height: deviceHeight * 0.03,
+                  height: deviceHeight * 0.05,
                 ),
                 Text(
                   "Duration: 3 Days",
@@ -280,16 +339,18 @@ class EventFeed extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(
-                onPressed: null,
-                // onPressed: () => Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => EventDetail(),
-                //   ),
-                // ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EventDetails(
+                      eventData: eventData,
+                    ),
+                  ),
+                ),
                 icon: Icon(
                   Icons.arrow_circle_right,
-                  color: Theme.of(context).primaryColor,
+                  // color: Theme.of(context).primaryColor,
+                  color: secondaryColor,
                   size: 40,
                 ),
               ),
