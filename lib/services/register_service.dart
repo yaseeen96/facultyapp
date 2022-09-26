@@ -6,7 +6,7 @@ class UserRegister extends Register {
   void StudentRegister(String email, String name, String department,
       String password, String password2) async {
     try {
-      final url =
+      const url =
           "https://z8w307611i.execute-api.ap-south-1.amazonaws.com/faculty/api/user/register/";
       final data = {
         "email": email,

@@ -27,22 +27,8 @@ class _EventResponsesState extends State<EventResponses> {
   }
 
   Widget build(BuildContext context) {
+    late List<ResponseModel> studentList;
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Container(
-        width: getDeviceWidth(context) * 0.5,
-        height: getDeviceHeight(context) * 0.06,
-        child: FloatingActionButton(
-            shape:
-                BeveledRectangleBorder(borderRadius: BorderRadius.circular(5)),
-            foregroundColor: Theme.of(context).highlightColor,
-            backgroundColor: Theme.of(context).primaryColor,
-            child: Text(
-              "Get Excel",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
-            ),
-            onPressed: createExcel),
-      ),
       backgroundColor: Theme.of(context).highlightColor,
       appBar: AppBar(
         leading: IconButton(
@@ -69,6 +55,7 @@ class _EventResponsesState extends State<EventResponses> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.data != null) {
               List<ResponseModel> eventList = snapshot.data!;
+              studentList = eventList;
 
               return ListView(
                 children: eventList
@@ -133,6 +120,21 @@ class _EventResponsesState extends State<EventResponses> {
               color: Theme.of(context).primaryColor,
             );
           },
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Container(
+        width: getDeviceWidth(context) * 0.5,
+        height: getDeviceHeight(context) * 0.06,
+        child: FloatingActionButton(
+          shape: BeveledRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          foregroundColor: Theme.of(context).highlightColor,
+          backgroundColor: Theme.of(context).primaryColor,
+          child: Text(
+            "Get Excel",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
+          ),
+          onPressed: () => createExcel(studentList),
         ),
       ),
     );

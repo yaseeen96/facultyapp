@@ -23,18 +23,6 @@ abstract class AddEvent {
       const url =
           "https://z8w307611i.execute-api.ap-south-1.amazonaws.com/faculty/api/addevents/";
 
-      // final data = FormData.fromMap({
-      //   "eventTitle": eventTitle,
-      //   "eventType": eventType,
-      //   "resoourceName": resourceName,
-      //   "aboutResource": aboutResource,
-      //   "aboutEvent": aboutEvent,
-      //   "venue": venue,
-      //   "social": social,
-      //   "startDate": startDate,
-      //   "endDate": endDate,
-      //   'image': image,
-      // });
       String filename = image.path.split("/").last;
       FormData formData = FormData.fromMap({
         "eventTitle": eventTitle,

@@ -1,5 +1,6 @@
 //pre-defined imports
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/wiredash.dart';
@@ -31,6 +32,8 @@ Future<void> main() async {
   String? token = prefs.getString("token");
 
   print(token);
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(
     MyApp(token: token),

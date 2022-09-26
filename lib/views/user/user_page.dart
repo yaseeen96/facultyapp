@@ -13,7 +13,6 @@ import 'user_settings_page.dart';
 import '../events/eventdetails.dart';
 import '../../models/events_model.dart';
 import '../../services/event_service.dart';
-import '../../utils/colors.dart';
 
 // Global Declaration
 
@@ -77,7 +76,7 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => UserSettingsPage(),
+                builder: (context) => const UserSettingsPage(),
               ),
             ),
             icon: Icon(
@@ -128,7 +127,7 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
               height: deviceHeight * 0.02,
             ),
             Container(
-              height: deviceHeight * 0.65,
+              height: deviceHeight * 0.7,
               child: TabBarView(
                 controller: _tabBarContoller,
                 children: [
@@ -156,53 +155,77 @@ class _UserPageState extends State<UserPage> with TickerProviderStateMixin {
   }
 }
 
-class Upcoming extends StatelessWidget {
+getEventsFeed() {
+  return data = _college.eventsFeed();
+}
+
+class Upcoming extends StatefulWidget {
   const Upcoming({super.key});
 
+  @override
+  State<Upcoming> createState() => _UpcomingState();
+}
+
+class _UpcomingState extends State<Upcoming> {
   @override
   Widget build(BuildContext context) {
     double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
     final deviceWidth = getDeviceWidth(context);
     final deviceHeight = getDeviceHeight(context);
-    return Container(
-      child: FutureBuilder<List<EventsModel>>(
-        future: data,
-        builder: (context, snapshot) {
-          if (snapshot.data != null) {
-            List<EventsModel> eventList = snapshot.data!;
+    return RefreshIndicator(
+      onRefresh: () {
+        setState(() {
+          // getEventsFeed();
+        });
+        return getEventsFeed();
+      },
+      child: Container(
+        child: FutureBuilder<List<EventsModel>>(
+          future: data,
+          builder: (context, snapshot) {
+            if (snapshot.data != null) {
+              List<EventsModel> eventList = snapshot.data!;
 
-            return ListView(
-              children: eventList
-                  .map(
-                    (event) => EventFeed(
-                        deviceWidth: deviceWidth,
-                        deviceHeight: deviceHeight,
-                        unitHeightValue: unitHeightValue,
-                        eventData: event),
-                  )
-                  .toList(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Upcoming -> ${snapshot.data}'),
-            );
-          } else if (snapshot.data == null) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).primaryColor,
-              ),
-            );
-          }
-          return Center(child: Text("null"));
-        },
+              return ListView(
+                children: eventList
+                    .map(
+                      (event) => EventFeed(
+                          deviceWidth: deviceWidth,
+                          deviceHeight: deviceHeight,
+                          unitHeightValue: unitHeightValue,
+                          eventData: event),
+                    )
+                    .where((element) => DateTime.now()
+                        .isBefore(DateTime.parse(element.eventData!.endDate!)))
+                    .toList(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Upcoming -> ${snapshot.data}'),
+              );
+            } else if (snapshot.data == null) {
+              return Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).primaryColor,
+                ),
+              );
+            }
+            return Center(child: Text("null"));
+          },
+        ),
       ),
     );
   }
 }
 
-class Completed extends StatelessWidget {
+class Completed extends StatefulWidget {
   const Completed({super.key});
 
+  @override
+  State<Completed> createState() => _CompletedState();
+}
+
+class _CompletedState extends State<Completed> {
   @override
   @override
   Widget build(BuildContext context) {
@@ -216,16 +239,27 @@ class Completed extends StatelessWidget {
           if (snapshot.data != null) {
             List<EventsModel> eventList = snapshot.data!;
 
-            return ListView(
-              children: eventList
-                  .map(
-                    (event) => EventFeed(
-                        deviceWidth: deviceWidth,
-                        deviceHeight: deviceHeight,
-                        unitHeightValue: unitHeightValue,
-                        eventData: event),
-                  )
-                  .toList(),
+            return RefreshIndicator(
+              color: Theme.of(context).primaryColor,
+              onRefresh: () {
+                setState(() {
+                  // getEventsFeed();
+                });
+                return getEventsFeed();
+              },
+              child: ListView(
+                children: eventList
+                    .map(
+                      (event) => EventFeed(
+                          deviceWidth: deviceWidth,
+                          deviceHeight: deviceHeight,
+                          unitHeightValue: unitHeightValue,
+                          eventData: event),
+                    )
+                    .where((element) => DateTime.now()
+                        .isAfter(DateTime.parse(element.eventData!.endDate!)))
+                    .toList(),
+              ),
             );
           } else if (snapshot.hasError) {
             return Center(
@@ -276,7 +310,7 @@ class EventFeed extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
                 // To fit the image width within the container
-                fit: BoxFit.fitWidth,
+                fit: BoxFit.cover,
 
                 image: NetworkImage(
                   "${eventData!.image}",
@@ -349,8 +383,7 @@ class EventFeed extends StatelessWidget {
                 ),
                 icon: Icon(
                   Icons.arrow_circle_right,
-                  // color: Theme.of(context).primaryColor,
-                  color: secondaryColor,
+                  color: Theme.of(context).primaryColor,
                   size: 40,
                 ),
               ),

@@ -25,8 +25,8 @@ class AddEvents extends StatefulWidget {
 String? dropValue = null;
 
 List<String> eventTypeItems = ["Online", "Offline"];
-File imageUpload = File("");
 // String imageString = "";
+File imageUpload = File("");
 
 TextEditingController eventTitle = TextEditingController();
 TextEditingController resourcePersonName = TextEditingController();
@@ -83,9 +83,13 @@ class _AddEventsState extends State<AddEvents> {
             height: getDeviceHeight(context) * 0.02,
           ),
           // Event type
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.black87),
+                borderRadius: BorderRadius.circular(10)),
             child: DropdownButtonFormField<String>(
+              decoration: InputDecoration(border: InputBorder.none),
               elevation: 0,
               dropdownColor: Theme.of(context).highlightColor,
               // underline: Container(),
@@ -287,23 +291,24 @@ class _AddEventsState extends State<AddEvents> {
             height: getDeviceHeight(context) * 0.02,
           ),
           customButton(
-            deviceHeight: getDeviceHeight(context),
-            deviceWidth: getDeviceWidth(context),
-            text: "Add Event",
-            onTap: () async {
-              _addEvent.addEventDetails(
-                  eventTitle.text,
-                  dropValue!,
-                  resourcePersonName.text,
-                  aboutResourcePerson.text,
-                  aboutEvent.text,
-                  venue.text,
-                  socialLink.text,
-                  startDate.text,
-                  endDate.text,
-                  imageUpload);
-            },
-          )
+              deviceHeight: getDeviceHeight(context),
+              deviceWidth: getDeviceWidth(context),
+              text: "Add Event",
+              onTap: () async {
+                await _addEvent.addEventDetails(
+                    eventTitle.text,
+                    dropValue!,
+                    resourcePersonName.text,
+                    aboutResourcePerson.text,
+                    aboutEvent.text,
+                    venue.text,
+                    socialLink.text,
+                    startDate.text,
+                    endDate.text,
+                    imageUpload);
+
+                Navigator.pop(context, true);
+              })
         ],
       ),
     );

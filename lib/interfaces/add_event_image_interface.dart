@@ -11,7 +11,7 @@ import '../models/events_model.dart';
 
 abstract class AddEventImage {
   Future addEventImages(
-    List<String>? filepath,
+    File? image,
     EventsModel eventData,
   ) async {
     try {
@@ -20,17 +20,12 @@ abstract class AddEventImage {
       const url =
           "https://z8w307611i.execute-api.ap-south-1.amazonaws.com/faculty/api/addeventimages/";
 
-      FormData formData = FormData();
-      for (var file in filepath!) {
-        formData.files.addAll(
-          [
-            MapEntry(
-              "${eventData.id}",
-              await MultipartFile.fromFile(file),
-            ),
-          ],
-        );
-      }
+      String filename = image!.path.split("/").last;
+      FormData formData = FormData.fromMap({
+        "eventImage": await MultipartFile.fromFile(image.path,
+            filename: filename, contentType: MediaType("jpeg", "png")),
+        "event": eventData.id,
+      });
 
       final dio = Dio();
 
@@ -38,12 +33,16 @@ abstract class AddEventImage {
       String? token = prefs.getString("token");
       dio.options.headers["Authorization"] = "Bearer $token";
 
-      for (var i = 0; i < filepath.length; i++) {
-        await dio.post(url, data: formData);
-      }
-      // Response response = await dio.post(
-      //   url,
-      //   data: formData,
+      await dio.post(
+        url,
+        data: formData,
+        options: Options(
+          headers: {
+            "Content-Type": "multi-form/form-data",
+          },
+        ),
+      );
+
       // );
     } catch (e) {
       print("Request Error -> ${e}");

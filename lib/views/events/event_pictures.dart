@@ -1,6 +1,7 @@
 import 'package:facultyapp/interfaces/add_event_image_interface.dart';
 import 'package:facultyapp/services/add_event_image_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:full_screen_image_null_safe/full_screen_image_null_safe.dart';
 import 'package:facultyapp/interfaces/event_image_interface.dart';
 import 'package:facultyapp/interfaces/event_interface.dart';
@@ -36,35 +37,47 @@ class _EventPicturesState extends State<EventPictures> {
 //post image
   final AddEventImage _addEventImage = CollegeAddEventImage();
 
+  File imageUpload = File("");
+  Future getImage() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    Image? imageDisplay;
+    if (image!.path == null) return;
+
+    File imageFile = File(image.path);
+
+    setState(() {
+      imageUpload = imageFile;
+    });
+  }
   // image picker function start
   // stores images selected in a list imageFileList
 
-  final ImagePicker imagePicker = ImagePicker();
+  // final ImagePicker imagePicker = ImagePicker();
 
-  List<XFile>? imageFileList = [];
+  // List<XFile>? imageFileList = [];
 
-  void selectImages() async {
-    List<XFile>? selectedImages = await imagePicker.pickMultiImage();
-    if (selectedImages!.isNotEmpty) {
-      imageFileList!.addAll(selectedImages);
-    }
-    // print("Image List Length:" + imageFileList!.length.toString());
-    // imageFileList!.forEach((element) {
-    //   print(element);
-    // });
+  // void selectImages() async {
+  //   List<XFile>? selectedImages = await imagePicker.pickMultiImage();
+  //   if (selectedImages!.isNotEmpty) {
+  //     imageFileList!.addAll(selectedImages);
+  //   }
+  //   // print("Image List Length:" + imageFileList!.length.toString());
+  //   // imageFileList!.forEach((element) {
+  //   //   print(element);
+  //   // });
 
-    setState(() {});
-  }
+  //   setState(() {});
+  // }
 
-  // end of image picker function
-  List<String>? fileList;
-  void convertToFile() {
-    for (var i = 0; i < imageFileList!.length; i++) {
-      fileList![i] = imageFileList![i].path;
-      print("Hey there ${fileList![i]}");
-    }
-    ;
-  }
+  // // end of image picker function
+  // List<String>? fileList;
+  // void convertToFile() {
+  //   for (var i = 0; i < imageFileList!.length; i++) {
+  //     fileList![i] = imageFileList![i].path;
+  //     print("Hey there ${fileList![i]}");
+  //   }
+  //   ;
+  // }
 
   @override
   void initState() {
@@ -84,11 +97,13 @@ class _EventPicturesState extends State<EventPictures> {
           backgroundColor: Theme.of(context).primaryColor,
           child: Icon(Icons.add),
           onPressed: () async {
-            selectImages();
-            convertToFile();
-            await _addEventImage.addEventImages(fileList, widget.eventData);
+            await getImage();
+            // convertToFile();
+            await _addEventImage.addEventImages(imageUpload, widget.eventData);
           }),
       appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
         automaticallyImplyLeading: false,
         leading: IconButton(
           color: Theme.of(context).primaryColor,
@@ -98,7 +113,8 @@ class _EventPicturesState extends State<EventPictures> {
         backgroundColor: Theme.of(context).highlightColor,
         title: Text(
           "Event Pictures",
-          style: TextStyle(color: Theme.of(context).primaryColor),
+          style:
+              TextStyle(color: Theme.of(context).primaryColor, fontSize: 24.sp),
         ),
       ),
       body: FutureBuilder<List<EventsImageModel>>(

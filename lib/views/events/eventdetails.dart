@@ -255,15 +255,6 @@ class _EventDetailsState extends State<EventDetails> {
               height: getDeviceHeight(context) * 0.02,
             ),
 
-            // Register Button
-
-            // if (pressed == false)
-
-            //Proper Implemet of register.
-            //Problem - We need 1 student ID to register for one event ID only once
-            //Solution - Requirements 1. student ID & registartion details student ID
-            //                        2. event ID & registartion details event ID
-            //
             InkWell(
               onTap: () => Navigator.push(
                   context,
@@ -288,29 +279,7 @@ class _EventDetailsState extends State<EventDetails> {
                 ),
               ),
             ),
-            // if (pressed == true &&
-            //     registerDetails.event!.id == widget.eventData!.id &&
-            //     registerDetails.usn == widget.user!.usn)
-            //   InkWell(
-            //     onTap: null,
-            //     child: Container(
-            //       alignment: Alignment.center,
-            //       height: getDeviceHeight(context) * 0.075,
-            //       width: getDeviceWidth(context) * 0.75,
-            //       padding: EdgeInsets.all(getDeviceHeight(context) * 0.01),
-            //       decoration: BoxDecoration(
-            //         // color: Theme.of(context).primaryColor,
-            //         color: Colors.grey,
-            //         borderRadius: BorderRadius.circular(10),
-            //       ),
-            //       //Dynamic text data added below
-            //       child: Text(
-            //         text,
-            //         style: TextStyle(
-            //             fontSize: 20, color: Theme.of(context).highlightColor),
-            //       ),
-            //     ),
-            //   ),
+
             SizedBox(
               height: getDeviceHeight(context) * 0.02,
             ),

@@ -1,6 +1,7 @@
 class FacultyLoginModel {
   String? email;
   String? token;
+  String? errorMessage;
 
   FacultyLoginModel({
     this.email,
