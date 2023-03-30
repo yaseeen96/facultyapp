@@ -26,6 +26,9 @@ Navigate to the project directory: cd faculty_app
 Run flutter pub get to install dependencies
 Run flutter run to start the app on your local device
 
+## Team Contributions
+@ven-p1
+
 ## Contributions
 Contributions to this project are always welcome! If you find a bug or have an idea for a new feature, please feel free to submit an issue or pull request.
 
